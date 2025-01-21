@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const session = require('express-session')
-
+const moment = require('moment-timezone')
 const app = express();
 const port =5000;
 
@@ -50,6 +50,8 @@ db.connect((err)=>{
 
 app.get('/login',(req,res)=>{
     if(req.session.userID){
+    const currentTime = moment.tz('Asia/Dhaka').format('HH:mm');
+    const currentDate = moment.tz('Asia/Dhaka').format('DD-MM-YYYY');
         res.send({loggedIn:true, user: req.session.userID})
     }
     else{
@@ -69,6 +71,12 @@ app.post('/create_user',  async (req,res)=>{
     const sql1 = `SELECT * FROM users WHERE Email = ?`
     const sql2 = `SELECT * FROM users WHERE Username = ?`
     const sql3 = `INSERT INTO users (Name, Username, Email, Password,dbname) VALUES (?, ?, ?, ?, ?);`
+    const sql4 = `CREATE TABLE IF NOT EXISTS ${dbname}(ID INT AUTO_INCREMENT PRIMARY KEY,
+    Date DATE NOT NULL,
+    Time TIME NOT NULL,
+    Reason VARCHAR(255) NOT NULL,
+    Explination TEXT NOT NULL DEFAULT 'Not Available',
+    Type VARCHAR(50) NOT NULL)`
 
     db.query(sql2,[username], (err, result)=>{
         if(err){
@@ -85,11 +93,17 @@ app.post('/create_user',  async (req,res)=>{
             if(result.length>0){
             return res.status(409).json({message:"Email Already Exists"})
             }
-            db.query(sql3,values,(err)=>{
+            db.query(sql3,values, (err)=>{
                 if(err){
                     return res.status(500).json({message: 'Internal Server Error'})
                 }
-                return res.status(201).json({message:"Successful"})
+                db.query(sql4,(err)=>{
+                    if(err){
+                        return res.status(404).json({message:'Unsuccessful'})
+                    }
+                    return res.status(201).json({message:"Successful"})
+                })
+                
             })
         })
     })    

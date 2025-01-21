@@ -254,7 +254,7 @@ function Settings() {
                   }}>Cancel</button>
                   </div>
                   </div>:<div className='d-flex justify-content-between'>
-                  <label style={{width:'15%',marginTop:'5px',whiteSpace:'nowrap',overflow: 'hidden',textOverflow: 'ellipsis'}} > <small>Name:</small> </label>
+                  <label style={{width:'15%',marginTop:'5px',whiteSpace:'nowrap',overflow: 'hidden',textOverflow: 'ellipsis'}} > <small>Email:</small> </label>
                   <div style={{width:'45%'}}>
                   <h6 style={{marginTop:'8px',whiteSpace:'nowrap',overflow: 'hidden',textOverflow: 'ellipsis'}}>{data.Email}</h6>
                   </div>
