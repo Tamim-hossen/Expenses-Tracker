@@ -1,0 +1,39 @@
+#editbtn{
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: white;
+    background-color: rgb(52, 152, 209);
+    box-shadow: 3px 3px 5px grey;
+    white-space:'nowrap';
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#savebtn{
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: white;
+    background-color: rgb(3, 204, 187);
+    box-shadow: 3px 3px 5px grey;
+    white-space:'nowrap';
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#cancelbtn{
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: white;
+    background-color: tomato;
+    box-shadow: 3px 3px 5px grey;
+    white-space:'nowrap';
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+button:hover{
+    scale: 1.01;
+}
+button:active{
+    scale:1.0;
+}
