@@ -72,6 +72,7 @@ app.post('/create_user',  async (req,res)=>{
     const sql2 = `SELECT * FROM users WHERE Username = ?`
     const sql3 = `INSERT INTO users (Name, Username, Email, Password,dbname) VALUES (?, ?, ?, ?, ?);`
     const sql4 = `CREATE TABLE IF NOT EXISTS ${dbname}(ID INT AUTO_INCREMENT PRIMARY KEY,
+    Amount INT(255) NOT NULL,
     Date DATE NOT NULL,
     Time TIME NOT NULL,
     Reason VARCHAR(255) NOT NULL,
@@ -156,6 +157,19 @@ app.get('/user_data/:dbname',(req,res)=>{
     })
 })
 
+app.get('/cash_data/:dbname',(req,res)=>{
+    const dbaname = req.params.dbname
+    const sql = `SELECT * FROM ${dbaname}`
+
+    db.query(sql,(err,result)=>{
+        if(err){
+            console.log(err)
+            return res.status(500).json({message:'Internal Server Error'})
+        }
+        return res.json(result)
+    })
+})
+
 app.post('/update_user', async (req,res)=>{
     const name = req.body.Name
     const email = req.body.Email
@@ -205,6 +219,19 @@ app.get('/logout',(req,res)=>{
         return res.status(200).json({message:'Logged out Successfully'})
     })
 })
+
+app.delete('/delete/:id',(req,res)=>{
+    const id = req.params.id
+    const dbdel = req.query.DBname
+    const sql = `DELETE FROM ${dbdel} WHERE ID=? `
+
+    db.query(sql, [id], (err) => {
+        if(err){
+            return res.status(500).json({message: 'Failed to delete'})
+        }
+        return res.status(200).json({message:'Deleted Successfully'})
+    })
+} )
 
 
 app.listen(port, ()=>{

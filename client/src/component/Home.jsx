@@ -13,6 +13,7 @@ import settingsbtn from '../assets/settings.png'
 function Home() {
  const [db,setDB] = useState('')
  const [loggedIn,setLoggedIn] = useState(false)
+ const [data,setData]=useState()
  const nav = useNavigate();
   useEffect(()=>{
     axios.get('/api/login',{withCredentials:true})
@@ -24,6 +25,16 @@ function Home() {
       }
     })
   },[])
+
+  useEffect(()=>{
+    axios.get(`/api/cash_data/${db}}`)
+    .then((res)=>{
+      console.log(res.data)
+      setData(res.data)
+    }).catch((err)=>{
+      console.log(err.response)
+    })
+  },[db])
 
   function handleLogout(){
     axios.get('/api/logout',{withCredentials:true})
@@ -92,7 +103,7 @@ function Home() {
         style={{backgroundImage:`url(${balanceimage})`,
         backgroundSize: 'contain', backgroundRepeat:'no-repeat', backgroundPosition:'right'
         }}
-        onClick={()=>{nav('/current')}}>
+        onClick={()=>{nav('/cashin')}}>
           <div>
             <h5>Curreent Balance</h5>
             <h4>5,000৳</h4>
@@ -111,7 +122,7 @@ function Home() {
         style={{backgroundImage:`url(${expensesimage})`,
         backgroundSize: 'contain', backgroundRepeat:'no-repeat', backgroundPosition:'right'
         }}
-        onClick={()=>{nav('/expenses')}}>
+        onClick={()=>{nav('/expense')}}>
         <div>
             <h5>Expenses</h5>
             <br/>
