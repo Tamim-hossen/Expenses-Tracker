@@ -15,6 +15,12 @@ function Home() {
  const [loggedIn,setLoggedIn] = useState(false)
  const [data,setData]=useState()
  const nav = useNavigate();
+ const [bdata,setBData] =useState()
+ let balance =0
+ let ecurr = 0
+ let bcurr=0
+ let ccurr=0
+ let ocurr=0
   useEffect(()=>{
     axios.get('/api/login',{withCredentials:true})
     .then((res)=>{
@@ -27,14 +33,32 @@ function Home() {
   },[])
 
   useEffect(()=>{
-    axios.get(`/api/cash_data/${db}}`)
+    axios.get(`/api/cash_data/${db}`)
     .then((res)=>{
       console.log(res.data)
       setData(res.data)
+      const tdata = res.data.filter((d)=> d.Type === 'budget')
+      const sortedData = tdata.sort((a, b) => {
+        const dateA = new Date(a.Date);
+        const dateB = new Date(b.Date);
+        return dateB - dateA;
+      })
+      setBData(sortedData)
     }).catch((err)=>{
       console.log(err.response)
     })
   },[db])
+
+  if(data){
+    data.map((d)=>{
+      if(d.Type==='expense'){
+        balance -= d.Amount
+      }
+      else if(d.Type==='cashin'){
+        balance += d.Amount
+      }
+    })
+  }
 
   function handleLogout(){
     axios.get('/api/logout',{withCredentials:true})
@@ -95,8 +119,49 @@ function Home() {
         style={{backgroundImage:`url(${overviewImage})`,
         backgroundSize: 'contain', backgroundRepeat:'no-repeat', backgroundPosition:'right' }}
         onClick={()=>{nav('/overview')}}>
-        <div>
+        <div style={{overflowY:'auto',padding: '10px'}}>
             <h5>Overview</h5>
+            <br/>
+
+
+           
+                     <div style={{overflowY:'auto',maxHeight: '200px',padding: '10px'}}>
+                     <h6>Current Balance: {balance= balance.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} ৳ </h6>
+                     <br/>
+                        <ol  className='list-group'>
+                        {Array.isArray(data) && data.length > 0 ? (
+                                [...data].reverse().map((d) => {
+                                  let updatedtype =''
+                                  if(d.Type){
+                                    if(d.Type==='expense'){
+                                      updatedtype='Expenditure'
+         
+                                    }
+                                    else if(d.Type==='cashin'){
+                                      updatedtype='Cash In'
+      
+                                    }
+                                    else if(d.Type==='budget'){
+                                      updatedtype='Budget'
+                                    }
+                                  }
+                                  if((d.Type === 'cashin'||d.Type === 'expense') && ocurr<3){
+                                    ocurr++
+                                    return(
+                                        <li className = ''style={{ overflowY:'hidden',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
+                                        <small><b>{updatedtype} - </b></small>
+                                        <small><b>{d.Amount} ৳ - </b></small>
+                                        <small><b>{d.Reason}</b></small>
+                                        </li>
+                                        )
+                                  }
+                                  
+                                  })):<tr>
+                                  <td colSpan={4}><h4 className='text-center'>No Data Available</h4></td>
+                                  </tr>}
+                      </ol>
+                      </div>
+                    
           </div>
         </div>
         <div id='card' className='card p-4'
@@ -104,9 +169,37 @@ function Home() {
         backgroundSize: 'contain', backgroundRepeat:'no-repeat', backgroundPosition:'right'
         }}
         onClick={()=>{nav('/cashin')}}>
-          <div>
-            <h5>Curreent Balance</h5>
-            <h4>5,000৳</h4>
+           <div style={{overflowY:'auto',padding: '10px'}}>
+            <h5>Cash In</h5>
+            <br/>
+
+
+           
+                     <div style={{overflowY:'auto',maxHeight: '200px',padding: '10px'}}>
+                     <h6>Recents</h6>
+                     <br/>
+                        <ol  className='list-group'>
+                        {Array.isArray(data) && data.length > 0 ? (
+                                [...data].reverse().map((d) => {
+                                  const formattedDate = new Date(d.Date).toLocaleDateString('en-GB');
+                                  if(d.Type === 'cashin' && ccurr<3){
+                                    ccurr++
+                                    return(
+                                        <li className = ''style={{ overflowY:'hidden',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
+                                        <small><b>{d.Amount} ৳ - </b></small>
+                                        <small><b>{d.Reason} - </b></small>
+                                        <small><b>{formattedDate} - </b></small>
+                                        <small><b>{d.Time}</b></small>
+                                        </li>
+                                        )
+                                  }
+                                  
+                                  })):<tr>
+                                  <td colSpan={4}><h4 className='text-center'>No Data Available</h4></td>
+                                  </tr>}
+                      </ol>
+                      </div>
+                    
           </div>
         </div>
       </div>
@@ -114,8 +207,37 @@ function Home() {
         <div id='card' className='card p-4' 
         style={{backgroundImage:`url(${budgetimage})`,
         backgroundSize: 'contain', backgroundRepeat:'no-repeat', backgroundPosition:'right'}} onClick={()=>{nav('/budget')}}>
-        <div>
+         <div style={{overflowY:'auto',padding: '10px'}}>
             <h5>Budget</h5>
+            <br/>
+
+
+           
+                     <div style={{overflowY:'auto',maxHeight: '200px',padding: '10px'}}>
+                     <h6>To be paid</h6>
+                     <br/>
+                        <ol  className='list-group'>
+                        {Array.isArray(bdata) && bdata.length > 0 ? (
+                                bdata.map((d) => {
+                                  const formattedDate = new Date(d.Date).toLocaleDateString('en-GB');
+                                  if(bcurr<3){
+                                    bcurr++
+                                    return(
+                                        <li className = ''style={{ overflowY:'hidden',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
+                                        <small><b>{d.Amount} ৳ - </b></small>
+                                        <small><b>{d.Reason} - </b></small>
+                                        <small><b>{formattedDate} - </b></small>
+                                        <small><b>{d.Time}</b></small>
+                                        </li>
+                                        )
+                                  }
+                                  
+                                  })):<tr>
+                                  <td colSpan={4}><h4 className='text-center'>No Data Available</h4></td>
+                                  </tr>}
+                      </ol>
+                      </div>
+                    
           </div>
         </div>
         <div id='card' className='card p-4' 
@@ -123,14 +245,37 @@ function Home() {
         backgroundSize: 'contain', backgroundRepeat:'no-repeat', backgroundPosition:'right'
         }}
         onClick={()=>{nav('/expense')}}>
-        <div>
+        <div style={{overflowY:'auto',padding: '10px'}}>
             <h5>Expenses</h5>
             <br/>
-            <br/>
-            <br/>
-            <ol>
-              <li><b>hello tamim how are you today?</b></li>
-            </ol>
+
+
+           
+                     <div style={{overflowY:'auto',maxHeight: '200px',padding: '10px'}}>
+                     <h6>Recents</h6>
+                     <br/>
+                        <ol  className='list-group'>
+                        {Array.isArray(data) && data.length > 0 ? (
+                                [...data].reverse().map((d) => {
+                                  const formattedDate = new Date(d.Date).toLocaleDateString('en-GB');
+                                  if(d.Type === 'expense' && ecurr<3){
+                                    ecurr++
+                                    return(
+                                        <li className = ''style={{ overflowY:'hidden',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
+                                        <small><b>{d.Amount} ৳ - </b></small>
+                                        <small><b>{d.Reason} - </b></small>
+                                        <small><b>{formattedDate} - </b></small>
+                                        <small><b>{d.Time}</b></small>
+                                        </li>
+                                        )
+                                  }
+                                  
+                                  })):<tr>
+                                  <td colSpan={4}><h4 className='text-center'>No Data Available</h4></td>
+                                  </tr>}
+                      </ol>
+                      </div>
+                    
           </div>
         </div>
       </div>

@@ -26,7 +26,8 @@ function Settings() {
     axios.get(`/api/cash_data/${DBname}`)
     .then((res)=>{
       console.log(res.data)
-      setData(res.data)
+      const cdata = res.data.filter((d)=> d.Type === 'cashin')
+      setData(cdata)
     }).catch((err)=>{
       console.log(err.response)
     })
@@ -89,7 +90,7 @@ function Settings() {
       <div id='main'>
         <div className='d-flex justify-content-end mb-2'>
           <button id= 'savebtn' onClick={()=>{
-            nav('/create/expense')
+            nav('/create/cashin')
           }}>Add</button>
         </div>
         <h3 className='text-center mb-4'>All Cash in</h3>
@@ -99,7 +100,7 @@ function Settings() {
               <th scope="col">Amount</th>
               <th scope="col">Date</th>
               <th scope="col">Time</th>
-              <th scope="col">Reason</th>
+              <th scope="col">Source</th>
               <th scope="col" style={{maxWidth:'10%'}}>Explination</th>
               <th scope='col'>Actions</th>
             </tr>
@@ -120,21 +121,26 @@ function Settings() {
                               <a style={{backgroundImage : `url(${editbtn})`,
                                 backgroundSize:'contain',
                                 backgroundRepeat:'no-repeat',
-                                backgroundPosition:'center', width:'40px', height:'30px', 
-                                marginRight:'10%', border:'none', backgroundColor:'transparent'}} onClick={()=>{
+                                backgroundPosition:'center', width:'20px', height:'23px', 
+                                marginRight:'10%', border:'none', backgroundColor:'transparent'}} 
+                                title='Edit'
+                                onClick={()=>{
                                   nav(`/edit/${d.ID}`)
                                 }} />
                               <a style={{backgroundImage : `url(${deleteicon})`,
                                 backgroundSize:'contain',
                                 backgroundRepeat:'no-repeat',
-                                backgroundPosition:'center', width:'25px', height:'30px', 
-                                marginRight:'10%', border:'none', backgroundColor:'transparent'}} onClick={()=>{
+                                backgroundPosition:'center', width:'15px', height:'20px', border:'none', backgroundColor:'transparent'}} 
+                                title='Delete'
+                                onClick={()=>{
                                   window.confirm('Are you sure?')? deleteEntry(d.ID) : ''
                                 }} />
                             </td>
                             </tr>)
                       }
-                      })):'Not Available'}
+                      })):<tr>
+                      <td colSpan={6}><h4 className='text-center'>No Data Available</h4></td>
+                      </tr>}
           </tbody>
         </table>
 

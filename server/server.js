@@ -220,7 +220,23 @@ app.get('/logout',(req,res)=>{
     })
 })
 
-app.delete('/delete/:id',(req,res)=>{
+app.put('/update_budget', (req, res) => {
+    const dbname = req.body.db; 
+    const ID = req.body.ID;
+    const currentdate = moment.tz('Asia/Dhaka').format('YYYY-MM-DD')
+    const currenttime = moment.tz('Asia/Dhaka').format('HH:mm:ss')
+    const values= [currentdate,currenttime,ID]
+    const sql = `UPDATE ${dbname} SET Type = 'expense', Date = ?, Time=? WHERE ID = ?`;
+    db.query(sql, values, (err) => {
+        if (err) {
+            return res.status(500).json({ message: 'Internal Server Error' });
+        }
+        return res.status(200).json({ message: 'Updated Successfully' });
+    });
+});
+
+
+app.delete('/delete/:id',(req,res)=>{ 
     const id = req.params.id
     const dbdel = req.query.DBname
     const sql = `DELETE FROM ${dbdel} WHERE ID=? `

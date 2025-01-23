@@ -6,6 +6,7 @@ import backicon from '../assets/back.png'
 import logoutbtn from '../assets/logout.png'
 import editbtn from '../assets/edit.png'
 import deleteicon from '../assets/delete.png'
+import saveicon from '../assets/save.png'
 
 function Settings() {
 
@@ -26,7 +27,13 @@ function Settings() {
     axios.get(`/api/cash_data/${DBname}`)
     .then((res)=>{
       console.log(res.data)
-      setData(res.data)
+      const bdata = res.data.filter((d)=> d.Type === 'budget')
+      const sortedData = bdata.sort((a, b) => {
+        const dateA = new Date(a.Date);
+        const dateB = new Date(b.Date);
+        return dateB - dateA;
+      })
+      setData(sortedData)
     }).catch((err)=>{
       console.log(err.response)
     })
@@ -39,6 +46,21 @@ function Settings() {
         setLoggedIn(false)
         nav('/')
       }
+    })
+  }
+  async function updateEntry(id){
+    const updata = {
+      ID : id,
+      db:DBname
+    }
+    await axios.put(`/api/update_budget`,updata)
+    .then((res)=>{
+      if(res.status===200){
+        window.alert('Updated Successsfully')
+        nav('/home')
+      }
+    }).catch((err)=>{
+      console.log(err.response)
     })
   }
   async function deleteEntry(id){
@@ -89,7 +111,7 @@ function Settings() {
       <div id='main'>
         <div className='d-flex justify-content-end mb-2'>
           <button id= 'savebtn' onClick={()=>{
-            nav('/create/expense')
+            nav('/create/budget')
           }}>Add</button>
         </div>
         <h3 className='text-center mb-4'>Budget History</h3>
@@ -97,8 +119,8 @@ function Settings() {
           <thead className='table-dark'>
             <tr>
               <th scope="col">Amount</th>
-              <th scope="col">Date</th>
-              <th scope="col">Time</th>
+              <th scope="col">Due Date</th>
+              <th scope="col">due Time</th>
               <th scope="col">Reason</th>
               <th scope="col" style={{maxWidth:'10%'}}>Explination</th>
               <th scope='col'>Actions</th>
@@ -117,24 +139,40 @@ function Settings() {
                             <td style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{d.Reason}</td>
                             <td style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}} title={d.Explination}>{d.Explination}</td>
                             <td className='d-flex justify-content-center'>
+                            <a style={{backgroundImage : `url(${saveicon})`,
+                                backgroundSize:'contain',
+                                backgroundRepeat:'no-repeat',
+                                backgroundPosition:'center', width:'15px', height:'23px', 
+                                marginRight:'10%', border:'none', backgroundColor:'transparent'}}
+                                title='Save'  
+                                onClick={()=>{
+                                  window.confirm('Mark as complete?')? updateEntry(d.ID) : ''
+                                }} />
                               <a style={{backgroundImage : `url(${editbtn})`,
                                 backgroundSize:'contain',
                                 backgroundRepeat:'no-repeat',
-                                backgroundPosition:'center', width:'40px', height:'30px', 
-                                marginRight:'10%', border:'none', backgroundColor:'transparent'}} onClick={()=>{
+                                backgroundPosition:'center', width:'20px', height:'23px', 
+                                marginRight:'10%', border:'none', backgroundColor:'transparent'}}
+                                title='Edit' 
+                                onClick={()=>{
                                   nav(`/edit/${d.ID}`)
                                 }} />
                               <a style={{backgroundImage : `url(${deleteicon})`,
                                 backgroundSize:'contain',
                                 backgroundRepeat:'no-repeat',
-                                backgroundPosition:'center', width:'25px', height:'30px', 
-                                marginRight:'10%', border:'none', backgroundColor:'transparent'}} onClick={()=>{
-                                  window.confirm('Are you sure?')? deleteEntry(d.ID) : ''
+                                backgroundPosition:'center', width:'15px', height:'20px', 
+                                 border:'none', backgroundColor:'transparent'}} 
+                                 title='Delete' 
+                                 onClick={()=>{
+                                  window.confirm('Are you sure you want to delete the budget?')? deleteEntry(d.ID) : ''
                                 }} />
+                                
                             </td>
                             </tr>)
                       }
-                      })):'Not Available'}
+                      })):<tr>
+                        <td colSpan={6}><h4 className='text-center'>No Data Available</h4></td>
+                        </tr>}
           </tbody>
         </table>
 

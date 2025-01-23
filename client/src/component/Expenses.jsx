@@ -26,7 +26,8 @@ function Settings() {
     axios.get(`/api/cash_data/${DBname}`)
     .then((res)=>{
       console.log(res.data)
-      setData(res.data)
+      const edata = res.data.filter((d)=> d.Type === 'expense')
+      setData(edata)
     }).catch((err)=>{
       console.log(err.response)
     })
@@ -120,21 +121,26 @@ function Settings() {
                               <a style={{backgroundImage : `url(${editbtn})`,
                                 backgroundSize:'contain',
                                 backgroundRepeat:'no-repeat',
-                                backgroundPosition:'center', width:'40px', height:'30px', 
-                                marginRight:'10%', border:'none', backgroundColor:'transparent'}} onClick={()=>{
+                                backgroundPosition:'center', width:'20px', height:'23px', 
+                                marginRight:'10%', border:'none', backgroundColor:'transparent'}} 
+                                title='Edit'
+                                onClick={()=>{
                                   nav(`/edit/${d.ID}`)
                                 }} />
                               <a style={{backgroundImage : `url(${deleteicon})`,
                                 backgroundSize:'contain',
                                 backgroundRepeat:'no-repeat',
-                                backgroundPosition:'center', width:'25px', height:'30px', 
-                                marginRight:'10%', border:'none', backgroundColor:'transparent'}} onClick={()=>{
+                                backgroundPosition:'center', width:'15px', height:'20px', border:'none', backgroundColor:'transparent'}} 
+                                title='Delete'
+                                onClick={()=>{
                                   window.confirm('Are you sure?')? deleteEntry(d.ID) : ''
                                 }} />
                             </td>
                             </tr>)
                       }
-                      })):'Not Available'}
+                      })):<tr>
+                      <td colSpan={6}><h4 className='text-center'>No Data Available</h4></td>
+                      </tr>}
           </tbody>
         </table>
 

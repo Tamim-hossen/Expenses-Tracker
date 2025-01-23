@@ -4,8 +4,7 @@ import axios from 'axios'
 import { useNavigate,Link,useLocation } from 'react-router-dom'
 import backicon from '../assets/back.png'
 import logoutbtn from '../assets/logout.png'
-import editbtn from '../assets/edit.png'
-import deleteicon from '../assets/delete.png'
+
 
 function Settings() {
 
@@ -13,6 +12,7 @@ function Settings() {
   const nav = useNavigate();
   const [DBname,setDBname] =useState('');
   const [data,setData] = useState()
+  let balance = 0
 
   useEffect(()=>{
     axios.get('/api/login')
@@ -41,6 +41,18 @@ function Settings() {
       }
     })
   }
+  
+  if(data){
+    data.map((d)=>{
+      if(d.Type==='expense'){
+        balance -= d.Amount
+      }
+      else if(d.Type==='cashin'){
+        balance += d.Amount
+      }
+    })
+  }
+  
 
 
 
@@ -79,6 +91,7 @@ function Settings() {
             onClick={handleLogout}/>
       </div>
       <div id='main'>
+      <h3 className='text-right mb-4'>Current Balance: {balance} ৳</h3>
         <h3 className='text-center mb-4'>Overview</h3>
         <table className='table table-bordered table-hover mt-3' style={{ tableLayout: 'fixed', width: '100%' }}>
           <thead className='table-dark'>
@@ -124,7 +137,9 @@ function Settings() {
                             
                             </tr>)
                       }
-                      )):'Not Available'}
+                      )):<tr>
+                      <td colSpan={6}><h4 className='text-center'>No Data Available</h4></td>
+                      </tr>}
           </tbody>
         </table>
 
