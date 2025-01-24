@@ -111,7 +111,9 @@ function Settings() {
       <div id='main'>
         <div className='d-flex justify-content-end mb-2'>
           <button id= 'savebtn' onClick={()=>{
-            nav('/create/budget')
+            nav('/create/budget',{
+              state:{action: 'budget'}
+            })
           }}>Add</button>
         </div>
         <h3 className='text-center mb-4'>Budget History</h3>
@@ -144,7 +146,7 @@ function Settings() {
                                 backgroundRepeat:'no-repeat',
                                 backgroundPosition:'center', width:'15px', height:'23px', 
                                 marginRight:'10%', border:'none', backgroundColor:'transparent'}}
-                                title='Save'  
+                                title='Save as Paid'  
                                 onClick={()=>{
                                   window.confirm('Mark as complete?')? updateEntry(d.ID) : ''
                                 }} />
@@ -155,7 +157,9 @@ function Settings() {
                                 marginRight:'10%', border:'none', backgroundColor:'transparent'}}
                                 title='Edit' 
                                 onClick={()=>{
-                                  nav(`/edit/${d.ID}`)
+                                  nav(`/edit/${d.ID}`,{
+                                    state:{action: 'budget'}
+                                  })
                                 }} />
                               <a style={{backgroundImage : `url(${deleteicon})`,
                                 backgroundSize:'contain',

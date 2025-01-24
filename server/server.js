@@ -209,6 +209,38 @@ app.post('/update_user', async (req,res)=>{
     })
 
 })
+app.post('/update_data',(req,res)=>{
+
+    const dbname = req.session.userID
+    const values = [req.body.Amount,req.body.Date,req.body.Time,req.body.Reason,req.body.Explination,req.body.Type,req.body.ID]
+    const sql = `UPDATE ${dbname} SET Amount = ?, Date=?, Time=?, Reason=?, Explination=?, Type=? WHERE ID=?`
+
+    db.query(sql,values,(err)=>{
+        if(err){
+            return res.status(500).json({message:'Internal Server Error'})
+        }
+        return res.status(200).json({message:'Data Updated'})
+    })
+})
+app.get('/data', (req,res)=>{
+    const id = req.query.ID;
+    const param =  req.session.userID;
+    const sql= `SELECT * FROM ${param} WHERE ID=${id}`
+    
+    console.log(sql)
+    db.query(sql, (err, result) => {
+        if(err){
+            console.log(err)
+            return res.status(500).json({message:"Internal server error"})
+        }
+        if (result.length === 0) {
+            return res.status(404).json({ message: "Student not found." });
+          }
+        console.log(result)
+        return res.status(200).json(result[0])
+       
+    })
+})
 
 app.get('/logout',(req,res)=>{
     req.session.destroy((err)=>{
@@ -235,7 +267,21 @@ app.put('/update_budget', (req, res) => {
     });
 });
 
-
+app.post('/new_data',(req,res)=>{
+    const dbaname = req.body.db
+    let date = req.body.Date || moment.tz('Asia/Dhaka').format('YYYY-MM-DD');
+    let time = req.body.Time || moment.tz('Asia/Dhaka').format('HH:mm:ss')
+    let exp = req.body.Explination || 'Not Available'
+    const values = [req.body.Amount,date,time,req.body.Reason,exp,req.body.Type]
+    const sql = `INSERT INTO ${dbaname} (ID,Amount,Date,Time,Reason,Explination,Type) VALUES(NULL, ?,?,?,?,?,?) `
+    console.log(values)
+    db.query(sql,values,(err)=>{
+        if(err){
+            return res.status(500).json({message:'Internal Server Error'})
+        }
+        return res.status(200).json({message:'Added data successfully'})
+    })
+})
 app.delete('/delete/:id',(req,res)=>{ 
     const id = req.params.id
     const dbdel = req.query.DBname

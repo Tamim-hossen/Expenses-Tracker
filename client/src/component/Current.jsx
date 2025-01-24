@@ -90,7 +90,9 @@ function Settings() {
       <div id='main'>
         <div className='d-flex justify-content-end mb-2'>
           <button id= 'savebtn' onClick={()=>{
-            nav('/create/cashin')
+            nav('/create/cashin',{
+              state:{action: 'cashin'}
+            })
           }}>Add</button>
         </div>
         <h3 className='text-center mb-4'>All Cash in</h3>
@@ -125,7 +127,9 @@ function Settings() {
                                 marginRight:'10%', border:'none', backgroundColor:'transparent'}} 
                                 title='Edit'
                                 onClick={()=>{
-                                  nav(`/edit/${d.ID}`)
+                                  nav(`/edit/${d.ID}`,{
+                                    state:{action: 'cashin'}
+                                  })
                                 }} />
                               <a style={{backgroundImage : `url(${deleteicon})`,
                                 backgroundSize:'contain',
