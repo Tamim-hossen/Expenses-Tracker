@@ -1,2 +1,2 @@
 # Expenses-Tracker
-in development
+V-1.0
